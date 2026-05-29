@@ -1,0 +1,28 @@
+# Shell Command Configuration
+alias mkdir="mkdir -p"
+alias mv="mv -i"
+alias cp="cp -i"
+alias rm="rm -i"
+alias df="df -h"
+alias du="du -h"
+alias fd="fdfind"
+alias open="xdg-open"
+alias bat="batcat"
+alias lg="lazygit"
+alias tmux-wylee="tmux -L wylee"
+
+# Conda environment management
+alias ca="conda activate"
+alias cda="conda deactivate"
+
+# Git configuration
+alias gs="git status"
+alias gdiff="git diff"
+
+# Application related
+alias shuttle="open https://www.kaist.ac.kr/kr/html/kaist/01140202.html"
+alias drive="cd ~/Google\ Drive/My\ Drive"
+
+# Kitty specific
+alias kssh='kitten ssh'
+alias kicat='kitten icat'

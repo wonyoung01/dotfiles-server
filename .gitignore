@@ -1,0 +1,3 @@
+*.swp
+# Fish runtime state (regenerated per machine)
+fish/fish_variables

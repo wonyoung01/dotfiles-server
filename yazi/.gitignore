@@ -1,0 +1,2 @@
+# Ignore plugins directory, which is where we will be installing our dependencies
+plugins/

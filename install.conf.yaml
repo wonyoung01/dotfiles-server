@@ -1,0 +1,33 @@
+- defaults:
+    link:
+      create: true
+      force: true
+
+- clean: ["~", "~/.tmux","~/.vim", "~/.config/kitty", "~/.config/fish/config.fish"]
+
+- link:
+    ~/.aliases: aliases
+    ~/.vimrc: vimrc
+    ~/.tmux.conf: tmux.conf
+    ~/.zshrc:
+      force: true
+      path: zshrc
+    ~/.vim/config:
+      path: vim/config
+      glob: true
+    ~/.tmux/scripts:
+      path: tmux/scripts
+      glob: true
+    ~/.config/kitty: kitty
+    ~/.config/zsh: zsh
+    ~/.config/yazi: yazi
+    ~/.config/fish/config.fish: fish/config.fish
+
+- shell:
+    - [chmod +x ./scripts/pre-install.sh ./scripts/tpm-install.sh, ./scripts/nvim.sh, ./scripts/cargo.sh ./scripts/node.sh, Setting execute permissions for scripts]
+    - [./scripts/pre-install.sh, Running pre-install script]
+    - [./scripts/cargo.sh, Installing cargo packages]
+    - [./scripts/node.sh, Installing node packages]
+    - [git submodule update --init --recursive, Installing submodules]
+    - [./scripts/tpm-install.sh, Installing tmux plugins]
+    - [./scripts/nvim.sh, Installing neovim]

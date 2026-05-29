@@ -1,0 +1,24 @@
+[opener]
+chrome = [
+	{ run = "google-chrome %s", orphan = true, for = "unix" },
+]
+tdf = [
+  { run = "tdf %s", block = true, for = "unix" },
+]
+
+[open]
+prepend_rules = [
+	{ url = "*.pdf", use = [ "open", "chrome", "tdf" ] },
+]
+
+[[plugin.prepend_fetchers]]
+id    = "git" # Remove if Yazi > v26.1.22
+url   = "*"
+run   = "git"
+group = "git"
+
+[[plugin.prepend_fetchers]]
+id    = "git" # Remove if Yazi > v26.1.22
+url   = "*/"
+run   = "git"
+group = "git"
