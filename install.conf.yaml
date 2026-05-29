@@ -22,6 +22,7 @@
     ~/.config/zsh: zsh
     ~/.config/yazi: yazi
     ~/.config/fish/config.fish: fish/config.fish
+    ~/.config/fish/conf.d/myabbrs.fish: fish/conf.d/myabbrs.fish
 
 - shell:
     - [chmod +x ./scripts/pre-install.sh ./scripts/tpm-install.sh, ./scripts/nvim.sh, ./scripts/cargo.sh ./scripts/node.sh, Setting execute permissions for scripts]

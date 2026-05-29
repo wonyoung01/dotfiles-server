@@ -78,35 +78,24 @@ fish_vi_key_bindings
 # Aliases (from ~/dotfiles/aliases)
 # Use functions with `command` for self-wrapping aliases to avoid recursion.
 ################################
-function mkdir; command mkdir -p $argv; end
-function mv;    command mv -i $argv; end
-function cp;    command cp -i $argv; end
-function rm;    command rm -i $argv; end
-function df;    command df -h $argv; end
-function du;    command du -h $argv; end
-
-alias fd        'fdfind'
-alias open      'xdg-open'
-alias bat       'batcat'
-alias lg        'lazygit'
-alias tmux-wylee 'tmux -L wylee'
-
-# Conda
-alias ca        'conda activate'
-alias cda       'conda deactivate'
-
-# Git
-alias gs        'git status'
-alias gdiff     'git diff'
-alias glola     'git log --graph --pretty=\'%Cred%h%Creset -%C(auto)%d%Creset %s %Cgreen(%cr) %C(bold blue)<%an>%Creset\' --all'
-
-# Apps
-alias shuttle   'xdg-open https://www.kaist.ac.kr/kr/html/kaist/01140202.html'
-alias drive     'cd ~/Google\ Drive/My\ Drive'
-
-# Kitty
-alias kssh      'kitten ssh'
-alias kicat     'kitten icat'
+function mkdir
+    command mkdir -p $argv
+end
+function mv
+    command mv -i $argv
+end
+function cp
+    command cp -i $argv
+end
+function rm
+    command rm -i $argv
+end
+function df
+    command df -h $argv
+end
+function du
+    command du -h $argv
+end
 
 ################################
 # FZF configuration
@@ -208,14 +197,25 @@ end
 # tmux-window-run: run a command in a new tmux window
 # Usage: tmux-window-run [-L socket] [-t session] [-n name] -- <cmd...>
 function tmux-window-run
-    set -l socket ""; set -l name run; set -l target ""
+    set -l socket ""
+    set -l name run
+    set -l target ""
     while test (count $argv) -gt 0
         switch $argv[1]
-            case -L; set socket $argv[2]; set -e argv[1..2]
-            case -n; set name   $argv[2]; set -e argv[1..2]
-            case -t; set target $argv[2]; set -e argv[1..2]
-            case --; set -e argv[1]; break
-            case '*'; break
+            case -L
+                set socket $argv[2]
+                set -e argv[1..2]
+            case -n
+                set name $argv[2]
+                set -e argv[1..2]
+            case -t
+                set target $argv[2]
+                set -e argv[1..2]
+            case --
+                set -e argv[1]
+                break
+            case '*'
+                break
         end
     end
     if test -z "$TMUX"; and test -z "$target"
@@ -239,14 +239,25 @@ end
 
 # tmux-session-run: run a command in a new tmux session
 function tmux-session-run
-    set -l socket ""; set -l target ""; set -l name run
+    set -l socket ""
+    set -l target ""
+    set -l name run
     while test (count $argv) -gt 0
         switch $argv[1]
-            case -L; set socket $argv[2]; set -e argv[1..2]
-            case -t; set target $argv[2]; set -e argv[1..2]
-            case -n; set name   $argv[2]; set -e argv[1..2]
-            case --; set -e argv[1]; break
-            case '*'; break
+            case -L
+                set socket $argv[2]
+                set -e argv[1..2]
+            case -t
+                set target $argv[2]
+                set -e argv[1..2]
+            case -n
+                set name $argv[2]
+                set -e argv[1..2]
+            case --
+                set -e argv[1]
+                break
+            case '*'
+                break
         end
     end
     test -z "$target"; and set target "run-$fish_pid-"(random)
@@ -276,7 +287,7 @@ end
 
 function rfv
     command rg --color=always --line-number --no-heading --smart-case "$argv" \
-    | command fzf --ansi \
+        | command fzf --ansi \
         --color "hl:-1:underline,hl+:-1:underline:reverse" \
         --delimiter : \
         --preview 'batcat --color=always {1} --highlight-line {2}' \

@@ -100,6 +100,17 @@ elif [ "$OS" = "Linux" ]; then
     echo "gh already installed"
   fi
 
+  # fish install (via official PPA, Ubuntu)
+  if ! command -v fish >/dev/null 2>&1; then
+    echo "Installing fish"
+    $SUDO apt-get install -y software-properties-common
+    $SUDO add-apt-repository -y ppa:fish-shell/release-4
+    $SUDO apt-get update
+    $SUDO apt-get install -y fish
+  else
+    echo "fish already installed"
+  fi
+
 else
   echo "Unsupported OS: $OS" >&2
   exit 1
@@ -112,17 +123,6 @@ if ! command -v uv >/dev/null 2>&1; then
 else
   echo "Updating uv"
   uv self update || true
-fi
-
-# Change default shell to zsh
-if command -v zsh >/dev/null 2>&1; then
-  ZSH_PATH="$(command -v zsh)"
-  if [ "${SHELL:-}" != "$ZSH_PATH" ]; then
-    echo "Changing default shell to zsh ($ZSH_PATH)"
-    chsh -s "$ZSH_PATH" || echo "chsh failed (maybe needs logout/login or permissions)"
-  else
-    echo "Already using zsh"
-  fi
 fi
 
 # oh-my-zsh install/update
