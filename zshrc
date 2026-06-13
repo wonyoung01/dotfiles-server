@@ -193,20 +193,24 @@ fi
 
 # >>> conda initialize >>>
 # !! Contents within this block are managed by 'conda init' !!
+# Supports either miniconda3 or anaconda3 (miniconda preferred). Set $CONDADIR
+# to point at the parent directory of the install (defaults to $HOME).
 if [ -z "$CONDADIR" ]; then
     CONDADIR="$HOME"
 fi
-__conda_setup="$('$CONDADIR/anaconda3/bin/conda' 'shell.zsh' 'hook' 2> /dev/null)"
-if [ $? -eq 0 ]; then
-    eval "$__conda_setup"
-else
-    if [ -f "$CONDADIR/anaconda3/etc/profile.d/conda.sh" ]; then
-        . "$CONDADIR/anaconda3/etc/profile.d/conda.sh"
+for __conda_base in "$CONDADIR/miniconda3" "$CONDADIR/anaconda3"; do
+    [ -d "$__conda_base" ] || continue
+    __conda_setup="$("$__conda_base/bin/conda" 'shell.zsh' 'hook' 2> /dev/null)"
+    if [ $? -eq 0 ]; then
+        eval "$__conda_setup"
+    elif [ -f "$__conda_base/etc/profile.d/conda.sh" ]; then
+        . "$__conda_base/etc/profile.d/conda.sh"
     else
-        export PATH="$CONDADIR/anaconda3/bin:$PATH"
+        export PATH="$__conda_base/bin:$PATH"
     fi
-fi
-unset __conda_setup
+    break
+done
+unset __conda_setup __conda_base
 # <<< conda initialize <<<
 # TODO: Check if this is needed. Currently comment out due to kitty terminal
 # export TERM=xterm-256color

@@ -30,15 +30,22 @@ fish_add_path -gP $HOME/.npm-global/bin
 
 ################################
 # Conda (managed block — re-run `conda init fish` to regenerate)
+# Supports either miniconda3 or anaconda3 (miniconda preferred). Set $CONDADIR
+# to point at the parent directory of the install (defaults to $HOME).
 ################################
 if test -z "$CONDADIR"
     set -gx CONDADIR $HOME
 end
-if test -f "$CONDADIR/anaconda3/etc/fish/conf.d/conda.fish"
-    source "$CONDADIR/anaconda3/etc/fish/conf.d/conda.fish"
-else if test -d "$CONDADIR/anaconda3/bin"
-    fish_add_path -gP "$CONDADIR/anaconda3/bin"
+for __conda_base in "$CONDADIR/miniconda3" "$CONDADIR/anaconda3"
+    if test -f "$__conda_base/etc/fish/conf.d/conda.fish"
+        source "$__conda_base/etc/fish/conf.d/conda.fish"
+        break
+    else if test -d "$__conda_base/bin"
+        fish_add_path -gP "$__conda_base/bin"
+        break
+    end
 end
+set -e __conda_base
 
 ################################
 # Interactive-only below
