@@ -3,7 +3,7 @@
       create: true
       force: true
 
-- clean: ["~", "~/.tmux","~/.vim", "~/.config/kitty", "~/.config/fish/config.fish"]
+- clean: ["~", "~/.tmux","~/.vim", "~/.config/kitty", "~/.config/yazi", "~/.config/fish/config.fish"]
 
 - link:
     ~/.aliases: aliases
@@ -20,7 +20,9 @@
       glob: true
     ~/.config/kitty: kitty
     ~/.config/zsh: zsh
-    ~/.config/yazi: yazi
+    ~/.config/yazi/yazi.toml: yazi/yazi.toml
+    ~/.config/yazi/package.toml: yazi/package.toml
+    ~/.config/yazi/init.lua: yazi/init.lua
     ~/.config/fish/config.fish: fish/config.fish
     ~/.config/fish/conf.d/myabbrs.fish: fish/conf.d/myabbrs.fish
 

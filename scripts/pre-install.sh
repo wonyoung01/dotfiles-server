@@ -55,6 +55,11 @@ elif [ "$OS" = "Linux" ]; then
     file
     unzip
     sysstat
+    libclang-dev
+    llvm-dev
+    clang
+    python3-pip
+    python3-venv
   )
   $SUDO apt-get update
   $SUDO apt-get install -y \
@@ -65,6 +70,20 @@ elif [ "$OS" = "Linux" ]; then
   if command -v fdfind >/dev/null 2>&1; then
     mkdir -p "$HOME/.local/bin"
     ln -sfn "$(command -v fdfind)" "$HOME/.local/bin/fd"
+  fi
+
+  # fish install (via official PPA, Ubuntu)
+  # Must run before fzf: fzf's installer registers ~/.fzf/bin in fish's
+  # universal fish_user_paths by shelling out to `fish`, which is a no-op if
+  # fish isn't installed yet.
+  if ! command -v fish >/dev/null 2>&1; then
+    echo "Installing fish"
+    $SUDO apt-get install -y software-properties-common
+    $SUDO add-apt-repository -y ppa:fish-shell/release-4
+    $SUDO apt-get update
+    $SUDO apt-get install -y fish
+  else
+    echo "fish already installed"
   fi
 
   # fzf install (requires curl/wget, installed above)
@@ -98,17 +117,6 @@ elif [ "$OS" = "Linux" ]; then
       $SUDO apt-get install -y gh
   else
     echo "gh already installed"
-  fi
-
-  # fish install (via official PPA, Ubuntu)
-  if ! command -v fish >/dev/null 2>&1; then
-    echo "Installing fish"
-    $SUDO apt-get install -y software-properties-common
-    $SUDO add-apt-repository -y ppa:fish-shell/release-4
-    $SUDO apt-get update
-    $SUDO apt-get install -y fish
-  else
-    echo "fish already installed"
   fi
 
 else

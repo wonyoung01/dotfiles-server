@@ -38,6 +38,7 @@ install_if_missing() {
 
 echo "==> Ensuring required tools are installed"
 install_if_missing zoxide
+install_if_missing tree-sitter-cli
 install_if_missing yazi-build
 ya pkg install
 ya pkg upgrade

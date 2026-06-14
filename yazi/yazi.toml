@@ -12,13 +12,11 @@ prepend_rules = [
 ]
 
 [[plugin.prepend_fetchers]]
-id    = "git" # Remove if Yazi > v26.1.22
 url   = "*"
 run   = "git"
 group = "git"
 
 [[plugin.prepend_fetchers]]
-id    = "git" # Remove if Yazi > v26.1.22
 url   = "*/"
 run   = "git"
 group = "git"
