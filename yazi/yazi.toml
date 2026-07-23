@@ -5,10 +5,32 @@ chrome = [
 tdf = [
   { run = "tdf %s", block = true, for = "unix" },
 ]
+code = [
+	{ run = "code %s", orphan = true, for = "unix" },
+]
+viu = [
+  { run = "viu %s", block = true, for = "unix" },
+]
+typora = [
+  { run = "typora %s", orphan = true, for = "unix" },
+]
+clipboard = [
+  { run = 'if [ -n "$WAYLAND_DISPLAY" ] && command -v wl-copy >/dev/null; then cat %s | wl-copy; else cat %s | xclip -selection clipboard -i; fi', desc = "Copy contents to clipboard", orphan = true, for = "linux" },
+  { run = "cat %s | pbcopy", desc = "Copy contents to clipboard", for = "macos" },
+]
 
 [open]
+
 prepend_rules = [
-	{ url = "*.pdf", use = [ "open", "chrome", "tdf" ] },
+	{ url = "*.pdf", use = [ "open", "chrome", "tdf", "reveal" ] },
+  { url = "*.md", use = ["edit", "typora", "clipboard", "reveal"] },
+  { url = "*.txt", use = ["edit", "clipboard", "reveal"] },
+  { url = "*.html", use = ["edit", "chrome", "clipboard", "reveal"] },
+	{ url = "*.ipynb", use = [ "open", "code", "reveal" ] },
+  { url = "*.jpg", use = [ "open", "viu", "reveal" ] },
+  { url = "*.jpeg", use = [ "open", "viu", "reveal" ] },
+  { url = "*.png", use = [ "open", "viu", "reveal" ] },
+  { url = "*.gif", use = [ "open", "viu", "reveal" ] },
 ]
 
 [[plugin.prepend_fetchers]]
