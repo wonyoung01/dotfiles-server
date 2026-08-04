@@ -110,13 +110,24 @@ end
 set -gx FZF_DEFAULT_COMMAND 'fdfind --type f --exclude .git --exclude Library'
 set -gx FZF_DEFAULT_OPTS "
   --height 90%
-  --tmux bottom,90%
   --layout reverse
   --border top
   --style full
   --preview 'fzf-preview.sh {}'
   --bind 'ctrl-o:become(xdg-open {}),ctrl-e:become(nvim {})'
 "
+
+# fzf's --tmux renders in a popup via `tmux display-popup -E -B`, and -B (no
+# border) only exists in tmux 3.3+. Older tmux dies with "unknown option -- B"
+# on every fzf call inside a session, including yazi's z/zoxide. tmux comes
+# from apt so its version varies per machine; opt in only when it can cope,
+# otherwise fzf falls back to rendering inline via --height above.
+if command -q tmux
+    set -l tmux_ver (command tmux -V | string match -rg '(\d+)\.(\d+)')
+    if test (count $tmux_ver) -eq 2; and test (math "$tmux_ver[1] * 100 + $tmux_ver[2]") -ge 303
+        set -gx FZF_DEFAULT_OPTS "$FZF_DEFAULT_OPTS  --tmux bottom,90%"
+    end
+end
 set -gx FZF_CTRL_T_COMMAND 'fdfind --hidden --exclude .git --exclude Library --no-ignore'
 set -gx FZF_CTRL_T_OPTS "
   --header 'Press CTRL-Y to copy command into clipboard'
