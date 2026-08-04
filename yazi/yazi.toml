@@ -14,6 +14,12 @@ viu = [
 typora = [
   { run = "typora %s", orphan = true, for = "unix" },
 ]
+tail = [
+  { run = "tail -n 200 -F %s", desc = "Follow (tail -F)", block = true, for = "unix" },
+]
+pager = [
+  { run = "less +F %s", desc = "Follow in less (+F, Ctrl-C to browse)", block = true, for = "unix" },
+]
 clipboard = [
   { run = 'if [ -n "$WAYLAND_DISPLAY" ] && command -v wl-copy >/dev/null; then cat %s | wl-copy; else cat %s | xclip -selection clipboard -i; fi', desc = "Copy contents to clipboard", orphan = true, for = "linux" },
   { run = "cat %s | pbcopy", desc = "Copy contents to clipboard", for = "macos" },
@@ -25,6 +31,10 @@ prepend_rules = [
 	{ url = "*.pdf", use = [ "open", "chrome", "tdf", "reveal" ] },
   { url = "*.md", use = ["edit", "typora", "clipboard", "reveal"] },
   { url = "*.txt", use = ["edit", "clipboard", "reveal"] },
+  { url = "*.log", use = ["tail", "pager", "edit", "clipboard", "reveal"] },
+  { url = "*.log.*", use = ["tail", "pager", "edit", "clipboard", "reveal"] },
+  { url = "*.out", use = ["tail", "pager", "edit", "clipboard", "reveal"] },
+  { url = "*.err", use = ["tail", "pager", "edit", "clipboard", "reveal"] },
   { url = "*.html", use = ["edit", "chrome", "clipboard", "reveal"] },
 	{ url = "*.ipynb", use = [ "open", "code", "reveal" ] },
   { url = "*.jpg", use = [ "open", "viu", "reveal" ] },
