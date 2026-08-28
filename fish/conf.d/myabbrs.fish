@@ -3,22 +3,31 @@
 
 if status is-interactive
     # system
-    abbr -a fd fdfind
-    abbr -a open xdg-open
-    abbr -a bat batcat
     abbr -a lg lazygit
-    abbr -a pbcopy 'xclip -in -sel clip'
-    abbr -a pbpaste 'xclip -out -sel clip'
+    if test (uname) != Darwin
+        # Debian names -> upstream names; macOS has fd/bat/open/pbcopy natively.
+        abbr -a fd fdfind
+        abbr -a open xdg-open
+        abbr -a bat batcat
+        abbr -a pbcopy 'xclip -in -sel clip'
+        abbr -a pbpaste 'xclip -out -sel clip'
+    end
 
     # yy: copy the current directory path to the clipboard.
-    # Falls back to OSC 52 when there is no X display (ssh, tty), which
-    # hands the text to the outer terminal emulator instead.
-    function yy --description 'Copy the current directory path to the clipboard'
-        set -l dir (realpath .)
-        if test -n "$DISPLAY"
-            printf '%s' $dir | xclip -in -sel clip
-        else
-            printf '\e]52;c;%s\a' (printf '%s' $dir | base64 -w0)
+    # macOS: pbcopy. Linux: xclip, falling back to OSC 52 when there is no X
+    # display (ssh, tty), which hands the text to the outer terminal emulator.
+    if test (uname) = Darwin
+        function yy --description 'Copy the current directory path to the clipboard'
+            printf '%s' (realpath .) | pbcopy
+        end
+    else
+        function yy --description 'Copy the current directory path to the clipboard'
+            set -l dir (realpath .)
+            if test -n "$DISPLAY"
+                printf '%s' $dir | xclip -in -sel clip
+            else
+                printf '\e]52;c;%s\a' (printf '%s' $dir | base64 -w0)
+            end
         end
     end
 

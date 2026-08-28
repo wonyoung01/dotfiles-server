@@ -13,12 +13,40 @@ else
 fi
 
 if [ "$OS" = "Darwin" ]; then
-  if ! command -v brew >/dev/null 2>&1; then
+  # Put an existing Homebrew on PATH first: the calling shell may not have it
+  # yet (fresh machine, or a shell started before zshrc was linked). Apple
+  # Silicon installs to /opt/homebrew, Intel to /usr/local. zshrc /
+  # config.fish do the same for interactive shells.
+  load_brew() {
+    local b
+    for b in /opt/homebrew/bin/brew /usr/local/bin/brew; do
+      if [ -x "$b" ]; then
+        eval "$("$b" shellenv bash)"
+        return 0
+      fi
+    done
+    return 1
+  }
+
+  if ! load_brew; then
     echo "Installing Homebrew"
     /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
-  else
-    echo "Updating Homebrew"
-    brew update
+    # The installer does not put `brew` on PATH for the calling shell.
+    if ! load_brew; then
+      echo "brew not found after install; aborting" >&2
+      exit 1
+    fi
+  fi
+
+  echo "Updating Homebrew"
+  brew update
+
+  # kitty is often installed by hand before this repo runs. `brew bundle`
+  # refuses to install the cask over an existing /Applications/kitty.app, so
+  # adopt the existing copy into Homebrew first (idempotent).
+  if [ -d /Applications/kitty.app ] && ! brew list --cask kitty >/dev/null 2>&1; then
+    echo "Adopting existing /Applications/kitty.app into Homebrew"
+    brew install --cask --adopt kitty
   fi
 
   # Brewfile bundle
@@ -26,6 +54,15 @@ if [ "$OS" = "Darwin" ]; then
     brew bundle
   else
     echo "No Brewfile found in $(pwd) - skipping 'brew bundle'"
+  fi
+
+  # fzf-preview.sh (used by FZF_*_OPTS) ships with fzf but brew keeps it out
+  # of PATH. Link it into ~/.local/bin, which paths.zsh / config.fish already
+  # add. Mirrors the fdfind -> fd link on Linux.
+  fzf_prefix="$(brew --prefix fzf 2>/dev/null || true)"
+  if [ -n "$fzf_prefix" ] && [ -x "$fzf_prefix/bin/fzf-preview.sh" ]; then
+    mkdir -p "$HOME/.local/bin"
+    ln -sfn "$fzf_prefix/bin/fzf-preview.sh" "$HOME/.local/bin/fzf-preview.sh"
   fi
 
 elif [ "$OS" = "Linux" ]; then
@@ -97,13 +134,6 @@ elif [ "$OS" = "Linux" ]; then
     "$HOME/.fzf/install" --all
   fi
 
-  # vim-plug install
-  if [ ! -f "$HOME/.vim/autoload/plug.vim" ]; then
-    echo "Installing vim-plug"
-    curl -fLo "$HOME/.vim/autoload/plug.vim" --create-dirs \
-      https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim
-  fi
-
   # GitHub CLI install (requires wget, installed above)
   if ! command -v gh >/dev/null 2>&1; then
     (type -p wget >/dev/null || ($SUDO apt-get update && $SUDO apt-get install -y wget)) &&
@@ -122,6 +152,13 @@ elif [ "$OS" = "Linux" ]; then
 else
   echo "Unsupported OS: $OS" >&2
   exit 1
+fi
+
+# vim-plug install (both OSes)
+if [ ! -f "$HOME/.vim/autoload/plug.vim" ]; then
+  echo "Installing vim-plug"
+  curl -fLo "$HOME/.vim/autoload/plug.vim" --create-dirs \
+    https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim
 fi
 
 # uv install/update

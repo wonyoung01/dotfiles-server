@@ -1,6 +1,7 @@
 [opener]
 chrome = [
-	{ run = "google-chrome %s", orphan = true, for = "unix" },
+	{ run = 'open -a "Google Chrome" %s', orphan = true, for = "macos" },
+	{ run = "google-chrome %s", orphan = true, for = "linux" },
 ]
 tdf = [
   { run = "tdf %s", block = true, for = "unix" },
@@ -12,7 +13,8 @@ viu = [
   { run = "viu %s", block = true, for = "unix" },
 ]
 typora = [
-  { run = "typora %s", orphan = true, for = "unix" },
+  { run = "open -a Typora %s", orphan = true, for = "macos" },
+  { run = "typora %s", orphan = true, for = "linux" },
 ]
 tail = [
   { run = "tail -n 200 -F %s", desc = "Follow (tail -F)", block = true, for = "unix" },

@@ -44,6 +44,12 @@ if [[ "$OSTYPE" == "linux-gnu"* ]]; then
 elif [[ "$OSTYPE" == "darwin"* ]]; then
   echo "Installing/Updating Neovim via Homebrew..."
 
+  # brew may not be on PATH in the calling shell (see pre-install.sh).
+  for __brew in /opt/homebrew/bin/brew /usr/local/bin/brew; do
+    [[ -x "$__brew" ]] && eval "$("$__brew" shellenv bash)" && break
+  done
+  unset __brew
+
   if command -v brew &>/dev/null; then
     brew update
     brew install neovim || brew upgrade neovim

@@ -1,7 +1,31 @@
 #!/usr/bin/env bash
 # Usage: cpu_ram.sh <pane_tty>
 # Output: " CPU <sys>% | RAM <sys>% | <full cmdline> "
-# CPU is measured using iostat/sar (like tmux-cpu plugin) with /proc/stat fallback.
+# Linux: CPU via iostat/sar (like tmux-cpu plugin) with /proc/stat fallback,
+#        RAM from /proc/meminfo.
+# macOS: CPU via `top` (two 1s samples), RAM from vm_stat (active + wired +
+#        compressed over hw.memsize). macOS iostat has different flags and its
+#        last column is a load average, and there is no /proc.
+
+if [[ "$(uname)" == "Darwin" ]]; then
+
+get_cpu() {
+  # First sample is since-boot; the second (1s later) is current.
+  # Line: "CPU usage: 6.25% user, 12.5% sys, 81.25% idle"
+  top -l 2 -n 0 -s 1 2>/dev/null | awk '/^CPU usage/ { u=$3; s=$5 }
+    END { gsub(/%/, "", u); gsub(/%/, "", s); printf "%.0f", u + s }'
+}
+
+get_ram() {
+  vm_stat 2>/dev/null | awk -v total="$(sysctl -n hw.memsize 2>/dev/null)" '
+    /page size of/                  { ps = $8 + 0 }
+    /^Pages active/                 { a  = $NF + 0 }
+    /^Pages wired down/             { w  = $NF + 0 }
+    /^Pages occupied by compressor/ { c  = $NF + 0 }
+    END { if (total > 0 && ps > 0) printf "%.0f", (a + w + c) * ps / total * 100; else print 0 }'
+}
+
+else
 
 get_cpu() {
   # iostat -c 1 2 takes two samples 1s apart; last line's final column is %idle.
@@ -25,8 +49,14 @@ get_cpu() {
              v=(1-di/dt)*100; if (v<0) v=0; if (v>100) v=100; printf "%.0f", v }'
 }
 
+get_ram() {
+  awk '/^MemTotal:/ {t=$2} /^MemAvailable:/ {a=$2} END { if (t>0) printf "%.0f", (1 - a/t) * 100; else print 0 }' /proc/meminfo
+}
+
+fi
+
 cpu_sys=$(get_cpu)
-ram_sys=$(awk '/^MemTotal:/ {t=$2} /^MemAvailable:/ {a=$2} END { if (t>0) printf "%.0f", (1 - a/t) * 100; else print 0 }' /proc/meminfo)
+ram_sys=$(get_ram)
 
 # Foreground process on the pane tty — full command line.
 tty=${1#/dev/}

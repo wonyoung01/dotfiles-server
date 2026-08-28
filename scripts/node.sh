@@ -15,6 +15,13 @@ export NVM_DIR="$HOME/.nvm"
 # skip install and then fall through to whatever `nvm` happens to be on PATH.
 if [ ! -s "$NVM_DIR/nvm.sh" ]; then
   echo "Installing nvm ${NVM_VERSION}..."
+  # macOS: the login shell is zsh, so the nvm installer would append its
+  # `export NVM_DIR` block to ~/.zshrc -- which dotbot has symlinked to this
+  # repo's zshrc, dirtying the checkout. env.zsh / config.fish already source
+  # nvm, so point the installer at /dev/null. Linux is left as-is.
+  if [ "$(uname)" = "Darwin" ]; then
+    export PROFILE=/dev/null
+  fi
   curl -o- "https://raw.githubusercontent.com/nvm-sh/nvm/${NVM_VERSION}/install.sh" | bash
 else
   echo "nvm already installed"

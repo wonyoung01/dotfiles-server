@@ -2,6 +2,23 @@
 # Translated from ~/dotfiles/zshrc and ~/.config/zsh/*.zsh
 
 ################################
+# Homebrew (macOS only)
+# Must come before the Editor block below, which looks for nvim under the
+# brew prefix. Apple Silicon: /opt/homebrew, Intel: /usr/local. No-op on Linux.
+################################
+if test (uname) = Darwin
+    for __brew in /opt/homebrew/bin/brew /usr/local/bin/brew
+        if test -x $__brew
+            $__brew shellenv fish | source
+            break
+        end
+    end
+    set -e __brew
+    # MacTeX (scripts/pdf.sh) installs to /Library/TeX/texbin
+    test -d /Library/TeX/texbin; and fish_add_path -gaP /Library/TeX/texbin
+end
+
+################################
 # Language / Editor
 ################################
 set -gx LANG en_US.UTF-8
@@ -107,14 +124,30 @@ end
 ################################
 # FZF configuration
 ################################
-set -gx FZF_DEFAULT_COMMAND 'fdfind --type f --exclude .git --exclude Library'
+# Per-OS command names (same as zsh/fzf_config.zsh). fzf runs become()/
+# execute() through `$SHELL -c`, so real binary names must be baked in.
+#   Linux (Debian/Ubuntu): fdfind, batcat, xdg-open, xclip
+#   macOS (Homebrew):      fd, bat, open, pbcopy
+if test (uname) = Darwin
+    set -g __fzf_fd fd
+    set -g __fzf_bat bat
+    set -g __fzf_open open
+    set -g __fzf_clip pbcopy
+else
+    set -g __fzf_fd fdfind
+    set -g __fzf_bat batcat
+    set -g __fzf_open xdg-open
+    set -g __fzf_clip 'xclip -selection clipboard'
+end
+
+set -gx FZF_DEFAULT_COMMAND "$__fzf_fd --type f --exclude .git --exclude Library"
 set -gx FZF_DEFAULT_OPTS "
   --height 90%
   --layout reverse
   --border top
   --style full
   --preview 'fzf-preview.sh {}'
-  --bind 'ctrl-o:become(xdg-open {}),ctrl-e:become(nvim {})'
+  --bind 'ctrl-o:become($__fzf_open {}),ctrl-e:become(nvim {})'
 "
 
 # fzf's --tmux renders in a popup via `tmux display-popup -E -B`, and -B (no
@@ -128,21 +161,21 @@ if command -q tmux
         set -gx FZF_DEFAULT_OPTS "$FZF_DEFAULT_OPTS  --tmux bottom,90%"
     end
 end
-set -gx FZF_CTRL_T_COMMAND 'fdfind --hidden --exclude .git --exclude Library --no-ignore'
+set -gx FZF_CTRL_T_COMMAND "$__fzf_fd --hidden --exclude .git --exclude Library --no-ignore"
 set -gx FZF_CTRL_T_OPTS "
   --header 'Press CTRL-Y to copy command into clipboard'
-  --bind 'ctrl-y:execute-silent(echo -n {1..} | xclip -selection clipboard)'
+  --bind 'ctrl-y:execute-silent(echo -n {1..} | $__fzf_clip)'
   --walker-skip .git,node_modules,target
   --preview 'fzf-preview.sh {}'
   --bind 'ctrl-/:change-preview-window(down|hidden|)'
 "
 set -gx FZF_CTRL_R_OPTS "
-  --bind 'ctrl-y:execute-silent(echo -n {2..} | xclip -selection clipboard)'
+  --bind 'ctrl-y:execute-silent(echo -n {2..} | $__fzf_clip)'
   --color header:italic
   --header 'Press CTRL-Y to copy command into clipboard'
   --preview-window hidden
 "
-set -gx FZF_ALT_C_COMMAND 'fdfind --type d --hidden --exclude .git --exclude Library'
+set -gx FZF_ALT_C_COMMAND "$__fzf_fd --type d --hidden --exclude .git --exclude Library"
 set -gx FZF_ALT_C_OPTS "
   --walker-skip .git,node_modules,target,Library
   --preview 'tree -C {}'
@@ -308,7 +341,7 @@ function rfv
         | command fzf --ansi \
         --color "hl:-1:underline,hl+:-1:underline:reverse" \
         --delimiter : \
-        --preview 'batcat --color=always {1} --highlight-line {2}' \
+        --preview "$__fzf_bat --color=always {1} --highlight-line {2}" \
         --preview-window 'up,60%,border-bottom,+{2}+3/3,~3' \
         --bind 'enter:become(nvim {1} +{2})'
 end

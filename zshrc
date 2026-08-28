@@ -44,6 +44,22 @@ set_running_title() {
 add-zsh-hook precmd set_idle_title
 add-zsh-hook preexec set_running_title
 
+# Homebrew (macOS only). Must come before ~/.config/zsh/*.zsh: env.zsh picks
+# EDITOR with `command -v nvim`, which lives under the brew prefix. Apple
+# Silicon installs to /opt/homebrew, Intel to /usr/local. No-op on Linux.
+if [[ "$OSTYPE" == darwin* ]]; then
+  for __brew in /opt/homebrew/bin/brew /usr/local/bin/brew; do
+    if [[ -x "$__brew" ]]; then
+      eval "$("$__brew" shellenv zsh)"
+      break
+    fi
+  done
+  unset __brew
+  # MacTeX (scripts/pdf.sh) installs to /Library/TeX/texbin; /etc/zprofile
+  # only adds it for login shells.
+  [[ -d /Library/TeX/texbin ]] && path+=(/Library/TeX/texbin)
+fi
+
 # Source (global) aliases.
 source ~/.aliases
 # Source local configs if the file exists

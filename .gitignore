@@ -1,3 +1,6 @@
 *.swp
 # Fish runtime state (regenerated per machine)
 fish/fish_variables
+
+# brew bundle lockfile (macOS)
+Brewfile.lock.json
