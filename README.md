@@ -48,6 +48,19 @@ macOS notes:
 - `brew shellenv` is evaluated at the top of `zshrc` / `config.fish`, so
   brew-installed tools are on PATH in every interactive shell.
 
+## yazi
+
+`.npy` / `.npz` files get an array preview – shape, dtype, memory order, size,
+values and a min/max/mean line – from `yazi/plugins/npy.yazi`. It shells out to
+`python3`; when that interpreter has no numpy it re-runs once under
+`uv run --with numpy` (~100 ms), and when uv is missing too it falls back to the
+metadata in the file header, which needs no dependencies at all. So a project
+venv's numpy is used when yazi is launched inside one, and previews still work
+outside one. Point `YAZI_NPY_PYTHON` at another interpreter to override.
+
+Reading is header-first, so a multi-GB array previews as fast as a small one,
+and object arrays are never unpickled (that would run code from the file).
+
 ## Manual / optional
 
 - **conda**: install Miniconda (or Anaconda) into `~/miniconda3` (or set

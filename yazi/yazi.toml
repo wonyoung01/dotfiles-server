@@ -45,6 +45,14 @@ prepend_rules = [
   { url = "*.gif", use = [ "open", "viu", "reveal" ] },
 ]
 
+[[plugin.prepend_previewers]]
+url = "*.npy"
+run = "npy"
+
+[[plugin.prepend_previewers]]
+url = "*.npz"
+run = "npy"
+
 [[plugin.prepend_fetchers]]
 url   = "*"
 run   = "git"
