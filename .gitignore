@@ -4,3 +4,6 @@ fish/fish_variables
 
 # brew bundle lockfile (macOS)
 Brewfile.lock.json
+
+# i3: local backups kept next to the config
+i3/*.bak

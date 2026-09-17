@@ -19,6 +19,9 @@
       path: tmux/scripts
       glob: true
     ~/.config/kitty: kitty
+    ~/.config/i3:
+      path: i3
+      if: '[ "$(uname)" = Linux ]'
     ~/.config/zsh: zsh
     ~/.config/yazi/yazi.toml: yazi/yazi.toml
     ~/.config/yazi/package.toml: yazi/package.toml

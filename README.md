@@ -1,7 +1,8 @@
 # dotfiles
 
-zsh (oh-my-zsh + powerlevel10k), fish, tmux, vim/neovim, kitty and yazi
-configs, linked into `$HOME` with [dotbot](https://github.com/anishathalye/dotbot).
+zsh (oh-my-zsh + powerlevel10k), fish, tmux, vim/neovim, kitty, yazi and
+(Ubuntu only) i3 configs, linked into `$HOME` with
+[dotbot](https://github.com/anishathalye/dotbot).
 
 Supported: **Ubuntu** (apt) and **macOS** (Homebrew, Apple Silicon or Intel).
 
@@ -60,6 +61,15 @@ outside one. Point `YAZI_NPY_PYTHON` at another interpreter to override.
 
 Reading is header-first, so a multi-GB array previews as fast as a small one,
 and object arrays are never unpickled (that would run code from the file).
+
+## i3 (Ubuntu / X11)
+
+`i3/` is linked to `~/.config/i3` on Linux only (`if: [ "$(uname)" = Linux ]` in
+`install.conf.yaml`); macOS skips it. `./install` does **not** apt-install i3 or
+its companions — the package list, the polybar / rofi / dunst files that are not in
+this repo yet, Korean input, and the i3 gotchas (`exec_always` only re-runs on
+*restart*, not *reload*; the `xset` idle-blank race) are all in
+[`i3/i3_setup.md`](i3/i3_setup.md).
 
 ## Manual / optional
 
