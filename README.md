@@ -17,8 +17,8 @@ cd ~/dotfiles
 `./install` is idempotent; re-run it to update everything. It:
 
 1. links the configs (`install.conf.yaml`),
-2. runs `scripts/pre-install.sh` – system packages, uv, oh-my-zsh, p10k, vim-plug,
-3. runs `scripts/cargo.sh` – rustup, zoxide, yazi, tree-sitter, zellij, broot,
+2. runs `scripts/pre-install.sh` – system packages, yazi (+ plugins), uv, oh-my-zsh, p10k, vim-plug,
+3. runs `scripts/cargo.sh` – rustup; on Ubuntu also zoxide, tree-sitter, zellij, broot,
 4. runs `scripts/node.sh` – nvm + LTS node, gemini/codex/copilot CLIs, claude,
 5. inits submodules, installs tmux plugins (tpm) and neovim (`scripts/nvim.sh`).
 
@@ -34,6 +34,8 @@ where command names differ.
 | packages | apt list in `scripts/pre-install.sh` | `Brewfile` via `brew bundle` (keep the two in sync) |
 | fzf | git checkout in `~/.fzf` | brew `fzf`; `fzf-preview.sh` linked into `~/.local/bin` |
 | gh, fish | apt repo / PPA | brew |
+| yazi | yazi apt repo | brew (`Brewfile`; `ffmpeg-full`/`imagemagick-full` force-linked) |
+| zoxide, tree-sitter, zellij, broot | cargo (`scripts/cargo.sh`) | brew (`Brewfile`); `cargo.sh` removes old cargo builds |
 | neovim | AppImage in `/opt` | brew |
 | fd / bat | `fdfind` / `batcat` (aliased to `fd` / `bat`) | `fd` / `bat` |
 | open / clipboard | `xdg-open` / `xclip` | `open` / `pbcopy` |

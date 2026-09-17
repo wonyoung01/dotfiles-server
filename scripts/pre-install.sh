@@ -56,6 +56,10 @@ if [ "$OS" = "Darwin" ]; then
     echo "No Brewfile found in $(pwd) - skipping 'brew bundle'"
   fi
 
+  # yazi previewers: ffmpeg-full / imagemagick-full (from the Brewfile) are
+  # not linked by default; the official yazi install steps force-link them.
+  brew link ffmpeg-full imagemagick-full -f --overwrite
+
   # fzf-preview.sh (used by FZF_*_OPTS) ships with fzf but brew keeps it out
   # of PATH. Link it into ~/.local/bin, which paths.zsh / config.fish already
   # add. Mirrors the fdfind -> fd link on Linux.
@@ -149,10 +153,24 @@ elif [ "$OS" = "Linux" ]; then
     echo "gh already installed"
   fi
 
+  # yazi install (official apt repo, https://yazi-rs.github.io/docs/installation)
+  if [ ! -f /etc/apt/sources.list.d/yazi.list ]; then
+    echo "Adding yazi apt repo"
+    curl -fsSL https://yazi-rs.github.io/builds/yazi-keyring.gpg | $SUDO tee /usr/share/keyrings/yazi-keyring.gpg >/dev/null
+    echo 'deb [signed-by=/usr/share/keyrings/yazi-keyring.gpg] https://yazi-rs.github.io/builds/ stable main' | $SUDO tee /etc/apt/sources.list.d/yazi.list >/dev/null
+  fi
+  $SUDO apt-get update
+  $SUDO apt-get install -y yazi
+
 else
   echo "Unsupported OS: $OS" >&2
   exit 1
 fi
+
+# yazi plugins (both OSes; ~/.config/yazi/package.toml is linked by dotbot
+# before this script runs)
+ya pkg install
+ya pkg upgrade
 
 # vim-plug install (both OSes)
 if [ ! -f "$HOME/.vim/autoload/plug.vim" ]; then
