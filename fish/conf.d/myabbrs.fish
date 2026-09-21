@@ -62,4 +62,8 @@ if status is-interactive
     # conda
     abbr -a ca 'conda activate'
     abbr -a cda 'conda deactivate'
+
+    # tmux
+    abbr -a ta 'tmux attach'
+    abbr -a tls 'tmux list-sessions'
 end
