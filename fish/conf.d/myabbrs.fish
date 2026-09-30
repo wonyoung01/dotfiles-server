@@ -66,4 +66,9 @@ if status is-interactive
     # tmux
     abbr -a ta 'tmux attach'
     abbr -a tls 'tmux list-sessions'
+
+    # claude
+    abbr -a clo 'claude --dangerously-skip-permissions --model opus --effort high'
+    abbr -a cls 'claude --dangerously-skip-permissions --model sonnet --effort high'
+    abbr -a clf 'claude --dangerously-skip-permissions --model fable --effort high'
 end
