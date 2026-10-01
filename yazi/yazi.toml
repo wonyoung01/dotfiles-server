@@ -27,6 +27,11 @@ clipboard = [
   { run = "cat %s | pbcopy", desc = "Copy contents to clipboard", for = "macos" },
 ]
 
+[preview]
+# Default 600x900 caps how large images/PDFs can be drawn in a wide pane.
+max_width  = 2000
+max_height = 2400
+
 [open]
 
 prepend_rules = [
@@ -44,6 +49,27 @@ prepend_rules = [
   { url = "*.png", use = [ "open", "viu", "reveal" ] },
   { url = "*.gif", use = [ "open", "viu", "reveal" ] },
 ]
+
+# Size images (>= half the pane width) and PDFs (full pane width) to the pane.
+[[plugin.prepend_previewers]]
+mime = "application/pdf"
+run = "fit-preview"
+
+[[plugin.prepend_previewers]]
+mime = "image/{avif,hei?,jxl}"
+run = "fit-preview --base=magick"
+
+[[plugin.prepend_previewers]]
+mime = "image/svg+xml"
+run = "fit-preview --base=svg"
+
+[[plugin.prepend_previewers]]
+mime = "image/*"
+run = "fit-preview"
+
+[[plugin.prepend_preloaders]]
+mime = "application/pdf"
+run = "fit-preview"
 
 [[plugin.prepend_previewers]]
 url = "*.npy"

@@ -61,6 +61,13 @@ metadata in the file header, which needs no dependencies at all. So a project
 venv's numpy is used when yazi is launched inside one, and previews still work
 outside one. Point `YAZI_NPY_PYTHON` at another interpreter to override.
 
+Image and PDF previews are sized to the preview pane by
+`yazi/plugins/fit-preview.yazi`: images are upscaled to at least half the pane
+width (bounded by its height), and PDF pages are rendered at the full pane width.
+A page taller than the pane is shown in slices; `J`/`K` scroll through the
+slices and on to the next page. It reads the cell size in pixels from the tty
+via `python3`, and needs poppler (`pdfinfo`, `pdftoppm`) and ImageMagick.
+
 Reading is header-first, so a multi-GB array previews as fast as a small one,
 and object arrays are never unpickled (that would run code from the file).
 
