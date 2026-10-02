@@ -64,8 +64,11 @@ if status is-interactive
     abbr -a cda 'conda deactivate'
 
     # tmux
-    abbr -a ta 'tmux attach'
-    abbr -a tls 'tmux list-sessions'
+    abbr -a ta 'tmux -L wylee attach'
+    abbr -a tls 'tmux -L wylee list-sessions'
+    abbr -a td 'tmux -L wylee detach-client'
+    abbr -a tks 'tmux -L wylee kill-session'
+    abbr -a tns 'tmux -L wylee new-session -s'
 
     # claude
     abbr -a clo 'claude --dangerously-skip-permissions --model opus --effort high'
