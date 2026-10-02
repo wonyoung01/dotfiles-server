@@ -25,7 +25,7 @@ brew "poppler"         # apt: poppler-utils (pdftotext, pdftoppm, ...)
 brew "direnv"
 brew "duf"
 brew "pkgconf"         # apt: pkg-config
-brew "openssl@3"       # apt: libssl-dev; needed by cargo-update (openssl-sys) in scripts/cargo.sh
+brew "openssl@3"       # apt: libssl-dev; for crates built from source that use openssl-sys
 brew "python"          # apt: python3-pip / python3-venv
 brew "fish"            # apt: fish PPA
 brew "fzf"             # Linux uses the git install in ~/.fzf

@@ -20,21 +20,15 @@ echo "==> Rust versions"
 rustc --version
 cargo --version
 
-echo "==> Installing cargo-update"
-cargo install cargo-update --locked
-
-echo "==> Updating installed Cargo packages only when needed"
-cargo install-update -a
-
-install_if_missing() {
-  local crate="$1"
-  if ! cargo install --list | grep -q "^${crate} "; then
-    echo "Installing $crate..."
-    cargo install "$crate" --locked
-  else
-    echo "$crate already installed"
-  fi
-}
+# cargo-binstall fetches prebuilt release binaries instead of compiling;
+# it only falls back to building from source when none exist.
+echo "==> Setting up cargo-binstall"
+if ! command -v cargo-binstall >/dev/null 2>&1; then
+  curl -L --proto '=https' --tlsv1.2 -sSf \
+    https://raw.githubusercontent.com/cargo-bins/cargo-binstall/main/install-from-binstall-release.sh | bash
+else
+  cargo binstall -y cargo-binstall
+fi
 
 uninstall_if_present() {
   local crate="$1"
@@ -47,6 +41,8 @@ uninstall_if_present() {
 # yazi moved to scripts/pre-install.sh (brew on macOS, apt repo on Ubuntu).
 # Drop the old cargo build so it stops shadowing the system binary on PATH.
 uninstall_if_present yazi-build
+# Replaced by cargo-binstall, which skips up-to-date crates and upgrades the rest.
+uninstall_if_present cargo-update
 
 if [ "$(uname)" = "Darwin" ]; then
   # These come from brew on macOS (Brewfile). ~/.cargo/bin is first on PATH,
@@ -57,12 +53,10 @@ if [ "$(uname)" = "Darwin" ]; then
   uninstall_if_present zellij
   uninstall_if_present broot
 else
-  echo "==> Ensuring required tools are installed"
-  install_if_missing zoxide
-  install_if_missing tree-sitter-cli
-  # WARN: Not using them really much.
-  install_if_missing zellij
-  install_if_missing broot
+  # Installs missing crates, upgrades outdated ones, skips the rest.
+  echo "==> Installing/updating tools (prebuilt binaries)"
+  # WARN: Not using zellij/broot really much.
+  cargo binstall -y --locked zoxide tree-sitter-cli zellij broot
 fi
 
 echo "==> Done"
